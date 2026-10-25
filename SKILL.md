@@ -9,7 +9,7 @@ Mandatory for all SSAU students (СПО, бакалавриат, магистр�
 
 Use it in two modes:
 - **Producing** a document (docx, LaTeX, Markdown→docx): apply every rule below while generating; for title pages read `references/title-pages.md`, for the bibliography read `references/bibliography.md`.
-- **Checking** a document: walk the checklist at the end and report each violation with the clause number (e.g. "п. 6.1.8: caption must be below the figure") so the student can argue with the нормоконтролер if needed.
+- **Checking** a document: follow "Checking a document" at the end. Report each violation with the clause number (e.g. "п. 6.1.8: caption must be below the figure") so the student can argue with the нормоконтролер if needed.
 
 Write explanations and reports in the language the user writes in (most SSAU users write Russian). Document text, quoted fixes, and the standard's terms (раздел, подраздел, реферат, приложение…) always stay in Russian, because that is what the student will paste back into the document.
 
@@ -175,9 +175,30 @@ pf.space_before = pf.space_after = Pt(0)
 ```
 Page number: a centred PAGE field in the footer with "different first page" enabled so the title page shows none. Captions, centred headings and the title page need `first_line_indent = 0`.
 
-## Compliance checklist
+## Checking a document
 
-Report each failure with its clause:
+1. **Run the checker** (it never modifies the input):
+   ```bash
+   python <skill-dir>/scripts/check_docx.py "path/to/report.docx" --pdf
+   ```
+   - `.doc`, `.docm`, `.rtf`, `.odt` are converted first (LibreOffice, or Word on Windows); python-docx alone cannot open them. If several versions exist (`_final.doc`, `.docm`, `.pdf`), check the newest and say which one.
+   - `--pdf` renders the document through Word/LibreOffice and checks what actually prints. Keep it on: automatic heading numbers, page numbers and stray list markers exist only in the rendered output, not in the document text. Needs `pdftotext` (poppler); without it the script skips those checks and says so.
+   - Lines starting with `!` are candidates. Confirm each before reporting: the text-rule hits are regex matches and include false positives (code, section numbers, quoted names).
+2. **Look at the rendered PDF** (the script prints its path) — title page, реферат, содержание, one page with a figure, one with a table, the sources list, the first appendix page. Visual problems the script can't see: off-centre captions, broken table borders, leftover markers, images over the margins, odd page breaks.
+3. **Read for content** in the реферат, введение, заключение: text copied from another work, counts that don't match, wrong topic. These are the most embarrassing errors and no script finds them.
+4. **Walk the checklist** below for anything not covered.
+
+### Report format
+
+Group findings by how much they matter, worst first. Real нормоконтроль mostly cares about the first group; typographic nits rarely block a defence, so don't let them bury the important errors.
+
+1. **Ошибки** — wrong or broken content: numbering gaps/duplicates, figures/tables/appendices not referenced, counts in the реферат that don't match, stray markers, copied text.
+2. **Нарушения оформления** — structure and formatting rules with a clear fix: captions, contents, sources list format, реферат format.
+3. **Мелочи** — indent 1.27 vs 1.25, decimal points, hyphen ranges, single bold words.
+
+For each finding give the clause, where it is (page or quoted text), and the fix written in Russian ready to paste. Start with a short "what's already right" line so the student knows what not to touch.
+
+### Checklist
 - [ ] A4, margins 30/15/20/20 mm, TNR 12–14, 1.5 spacing, justified, 1.25 cm indent, no bold (3.1–3.2)
 - [ ] Element order matches §2; each element/section on a new page (3.4, 4.1.1)
 - [ ] Element headings CAPS, centred, unnumbered, no period (4.1.2)
@@ -192,3 +213,9 @@ Report each failure with its clause:
 - [ ] Tables: referenced, title above left no indent "Таблица N – Name", no empty cells, "Продолжение таблицы N" (6.2)
 - [ ] Formulas: own line, number `(N)` at right, "где" without colon, units given, no `*` (6.3)
 - [ ] Text rules: "минус", no bare `%`/`№`/signs, units after last value, 1–9 in words (7)
+- [ ] Numbering is continuous with no gaps or duplicates: sections (4.1.7), figures (6.1.5), tables (6.2.6), formulas (6.3.3), appendix letters (5.10.6)
+- [ ] Every figure, table and appendix is referenced in the text, and references point at the right number after any renumbering (6.1.3, 6.2.3, 5.10.4)
+- [ ] Содержание matches the actual headings, wording and page numbers; appendices listed with their titles (5.4.1, 5.10.9)
+- [ ] Реферат counts (pages, figures, tables, sources, appendices) match the document (5.3.1)
+- [ ] No empty auto-numbered paragraphs (print as a stray "1." or bullet), typically between the sources list and the first appendix
+- [ ] Hand-typed contents or headings centred with spaces/indents instead of alignment: works visually but breaks when edited — mention, low priority

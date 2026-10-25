@@ -38,3 +38,12 @@ Claude подключает навык сам, когда вы просите о
 | `SKILL.md` | Все требования к оформлению, настройка .docx через python-docx, чек-лист нормоконтроля |
 | `references/title-pages.md` | Шаблоны титульного листа и задания на ВКР |
 | `references/bibliography.md` | Примеры библиографического описания по видам источников |
+| `scripts/check_docx.py` | Автоматическая проверка .docx/.doc: поля, шрифты, нумерация разделов/рисунков/таблиц, ссылки, содержание, реферат, список источников |
+
+Для проверки нужны Python и `python-docx` (`pip install python-docx`). Для .doc и проверки «как напечатается» — Microsoft Word (Windows) или LibreOffice, а также `pdftotext` (poppler).
+
+Скрипт можно запустить и без Claude:
+
+```bash
+python scripts/check_docx.py "Курсовая.docx" --pdf
+```
